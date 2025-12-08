@@ -17,6 +17,12 @@ spring:
   liquibase:
     contexts: test
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
+      password: ${REDIS_PASSWORD:redispass}
+
 server:
   port: 8081
 

@@ -11,6 +11,10 @@ spring:
   liquibase:
     contexts: dev
 
+  cache:
+    redis:
+      time-to-live: 60000  # 1 minuto em dev
+
 logging:
   level:
     root: INFO
