@@ -1,0 +1,6 @@
+databaseChangeLog:
+# Este é o arquivo master do Liquibase
+# Ele orquestra todos os changesets do projeto
+
+# Por enquanto, vazio - nenhuma migration ainda
+# O Liquibase vai criar apenas as tabelas de controle dele
