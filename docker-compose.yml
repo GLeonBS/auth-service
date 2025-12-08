@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    ports:
+      - "5433:5432"  # ⬅️ Porta customizada
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: authuser
+      POSTGRES_PASSWORD: authpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authuser -d authdb"]
+      interval: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: auth-redis
+    ports:
+      - "6380:6379"
+    command: redis-server --requirepass redispass --maxmemory 256mb
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  auth-network:
+    driver: bridge
