@@ -1,0 +1,87 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-organization-members
+      author: leon
+      changes:
+        - createTable:
+            tableName: organization_members
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_member_organization
+                    references: organizations(id)
+                    deleteCascade: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_member_user
+                    references: user_access(id)
+                    deleteCascade: true
+              - column:
+                  name: role
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: joined_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # Constraint: Um user só pode ter 1 role por organização
+        - addUniqueConstraint:
+            tableName: organization_members
+            columnNames: organization_id, user_id
+            constraintName: uk_org_member_unique
+
+        # Índice para buscar membros de uma organização
+        - createIndex:
+            indexName: idx_org_members_organization_id
+            tableName: organization_members
+            columns:
+              - column:
+                  name: organization_id
+
+        # Índice para buscar organizações de um user
+        - createIndex:
+            indexName: idx_org_members_user_id
+            tableName: organization_members
+            columns:
+              - column:
+                  name: user_id
+
+        # Índice composto para queries com filtro de active
+        - createIndex:
+            indexName: idx_org_members_org_active
+            tableName: organization_members
+            columns:
+              - column:
+                  name: organization_id
+              - column:
+                  name: active
+
+        # Check constraint para validar roles
+        - sql:
+            sql: ALTER TABLE organization_members ADD CONSTRAINT chk_role CHECK (role IN ('OWNER', 'ADMIN', 'MEMBER'))
+
+      rollback:
+        - dropTable:
+            tableName: organization_members

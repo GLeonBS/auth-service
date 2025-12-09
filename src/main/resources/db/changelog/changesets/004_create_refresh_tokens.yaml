@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-refresh-tokens
+      author: leon
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_refresh_token_user
+                    references: user_access(id)
+                    deleteCascade: true
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_refresh_token_organization
+                    references: organizations(id)
+                    deleteCascade: true
+              - column:
+                  name: expires_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revoked
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # Índice no token para validação rápida
+        - createIndex:
+            indexName: idx_refresh_tokens_token
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: token
+
+        # Índice no user_id para buscar tokens do user
+        - createIndex:
+            indexName: idx_refresh_tokens_user_id
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: user_id
+
+        # Índice composto para buscar tokens ativos de um user em uma org
+        - createIndex:
+            indexName: idx_refresh_tokens_user_org
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: organization_id
+              - column:
+                  name: revoked
+
+        # Índice no expires_at para limpeza de tokens expirados
+        - createIndex:
+            indexName: idx_refresh_tokens_expires_at
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: expires_at
+
+      rollback:
+        - dropTable:
+            tableName: refresh_tokens

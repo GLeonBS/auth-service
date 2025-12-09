@@ -1,6 +1,15 @@
 databaseChangeLog:
-# Este é o arquivo master do Liquibase
-# Ele orquestra todos os changesets do projeto
+  - property:
+      name: text
+      value: "varchar(255)"
+  - include:
+      file: db/changelog/changesets/001_create_organizations.yaml
 
-# Por enquanto, vazio - nenhuma migration ainda
-# O Liquibase vai criar apenas as tabelas de controle dele
+  - include:
+      file: db/changelog/changesets/002_create_user_access.yaml
+
+  - include:
+      file: db/changelog/changesets/003_create_organization_members.yaml
+
+  - include:
+      file: db/changelog/changesets/004_create_refresh_tokens.yaml

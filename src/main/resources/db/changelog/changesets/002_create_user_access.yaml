@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-user-access
+      author: leon
+      changes:
+        - createTable:
+            tableName: user_access
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: ${text}
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: ${text}
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${text}
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+        
+        # Índice no email para login rápido
+        - createIndex:
+            indexName: idx_user_access_email
+            tableName: user_access
+            columns:
+              - column:
+                  name: email
+        
+        # Índice no active
+        - createIndex:
+            indexName: idx_user_access_active
+            tableName: user_access
+            columns:
+              - column:
+                  name: active
+      
+      rollback:
+        - dropTable:
+            tableName: user_access

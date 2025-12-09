@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-organizations
+      author: leon
+      changes:
+        - createTable:
+            tableName: organizations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${text}
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+        # Índice no slug para buscas rápidas
+        - createIndex:
+            indexName: idx_organizations_slug
+            tableName: organizations
+            columns:
+              - column:
+                  name: slug
+
+        # Índice no active para filtrar orgs ativas
+        - createIndex:
+            indexName: idx_organizations_active
+            tableName: organizations
+            columns:
+              - column:
+                  name: active
+
+      rollback:
+        - dropTable:
+            tableName: organizations
