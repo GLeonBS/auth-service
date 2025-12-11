@@ -1,5 +1,7 @@
 package br.app.leon.authservice.domain.token;
 
+import br.app.leon.authservice.domain.organization.Organization;
+import br.app.leon.authservice.domain.useraccess.UserAccess;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +17,8 @@ import java.util.UUID;
 public class RefreshToken {
     private UUID id;
     private String token;
-    private UUID userId;
-    private UUID organizationId;
+    private UserAccess user;
+    private Organization organization;
     private LocalDateTime expiresAt;
     private boolean revoked;
     private LocalDateTime createdAt;
